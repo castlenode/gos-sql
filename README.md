@@ -405,6 +405,10 @@ Top | Name                     | Miss   | AvgMiss   | AvgRank
 49  | Bajun                    | 8351   | 3.377     | 2.6122
 50  | wecosmos                 | 42928  | 17.359    | 2.6385
 
+A nice graphic for the top20 ;)
+
+![Average misses per 200 blocks window graphic](./GoS.jpg)
+
 
 ## Proposer responsible for most misses per validator
 
