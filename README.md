@@ -44,11 +44,12 @@ df7cadb9ffb373f4e249786be5c9a8d85c5668e19f39e914e479432b7da92528  gos.sql
 
 ## Unofficial GoS Results
 
-We have computed the results of Game of Stakes using `gos-sql`. You will find these results thereafter. The code used to generate them can be found [here](./score.php). Feel free to verify these results yourself. 
+We have computed the results of Game of Stakes using `gos-sql`. The code used to generate them can be found [here](./score.php). Feel free to verify these results yourself. 
 
 **Note: The results presented hereafter are unofficial. The only official Game of Stakes results will be provided by the Tendermint Team.**
 
-### Global Block information
+### Global Information
+
  - Number of blocks: `494582`
  - Number of blocks with more than 70% of voting power: `489259` (98%)
  - game_of_stakes last block: `11442`
@@ -57,7 +58,9 @@ We have computed the results of Game of Stakes using `gos-sql`. You will find th
  - game_of_stakes_6 last block: `38900`
 
 
-### Cumulative bonded stake (excluding GoS5)
+### Cumulative Bonded Stake (excluding GoS5)
+
+This tab shows the voting power cumulated over GoS, GoS3 and GoS6. GoS5 has been excluded because some validators did not get vesting stake in genesis.
 
 Top | Name                     | Power    
 --- | ------------------------ | ---------
@@ -114,6 +117,11 @@ Top | Name                     | Power
 
 
 ### Missed Blocks
+
+This tab shows the number of missed *precommits* per validator.
+- The `66%` column is the regular metric, with all the blocks.
+- The `70%` column is the same metric except the blocks with less than 70% voting power are excluded. 
+- The `OFF` column shows the number of blocks for which the validator was outside the validator set. Each of these blocks counts as a miss.
 
 Top | Name                     | 66%*   | 70%    | Off   
 --- | ------------------------ | ------ | ------ | ------
@@ -336,7 +344,13 @@ Top | Name                     | 66%*   | 70%    | Off
 217 | A261869C6E68D0A67E3AACF5 | 494582 | 494554 | 494323
 
 
-### Avg(Missed blocks rankings per 200 blocks windows)
+### Average ranking per 200 blocks window 
+
+For this metric, we divide the chain in windows of 200 blocks, and count the number of missed precommits per window. Then, we do a ranking of validators for each window, and average the results.
+
+- The `Miss` column shows the total number of missed *precommits*
+- The `AvgMiss` column shows the average number of missed *precommits* per window of 200 blocks.
+- The `AvgRank` columns shows the average rankings in terms of missed precommits per window of 200 blocks.
 
 Top | Name                     | Miss   | AvgMiss   | AvgRank
 --- | ------------------------ | ------ | --------- | ------
@@ -394,6 +408,8 @@ Top | Name                     | Miss   | AvgMiss   | AvgRank
 
 ## Proposer responsible for most misses per validator
 
+For each validator, we show the validator that most often was the proposer who failed to include their precommit. We also give the percentage of missed block said proposer is responsible for.
+
 Name                     | Proposer                 | %   
 ------------------------ | ------------------------ | ----
 Certus_One               | communist                | 59% 
@@ -450,7 +466,17 @@ _meleaTrust-_-StakeBank  | node                     | 0%
 
 ### List of blocks removed because of censorship
 
+Several instances of isolated precommit censorship were spotted during Game of Stakes. Validator censorship is trivial to implement but very damaging for the validator with regards to the Missed precommits metric. It is also hard to defend against. While it is not explicitly out of bounds for GoS, we still wanted to recompute the precommits-related metric and exclude the blocks where censorship happened to see what would be the difference. 
+
+*Note: If you spotted a rogue censorship attack that concern you, feel free to report it in the Issues. We will add it to the list*
+
 #### Censure By Validatorich
+
+`Validatorich` committed censorship attack at the end of GoS against the following validators: Validator.network, CypherCore, nothanks, block3, Sentinel, Atom-Guide, StakeCapital and morfeus. [They claimed it themselves in GoS Riot chat room](https://matrix.to/#/!RKBbCjMEiDPKKewRIE:matrix.org/$155005829916129PNjjS:matrix.org?via=matrix.org&via=t2bot.io). The censorship can be verified with the following query:
+
+```
+select sum(miss) FROM blockvals WHERE proposerid=81 AND validatorid=76 AND chain='game_of_stakes_6' AND blocktime > '2019–02–14 07:18:56'
+```
 
 Chain            | Height
 ---------------- | ------
@@ -470,6 +496,8 @@ game_of_stakes_6 | 38051,38125,38197,38269,38339,38407,38484,38552,38624,38697
 game_of_stakes_6 | 38769,38837
 
 #### Censure By Communist
+
+This censorship was reported by `Certus One`. It occurred during `GoS3`. We accepted this report as a valid report because `Communist` is responsible for `59%` of all missed *precommits* from `Certus One` (see [this tab](#proposer-responsible-for-most-misses-per-validator)).
 
 Chain            | Height
 ---------------- | ------
@@ -541,7 +569,7 @@ Top | Name                     | 66%*   | 70%    | Off
 50  | _meleaTrust-_-StakeBank  | 33296  | 32845  | 18425 
 
 
-### Avg(Missed blocks rankings per 200 blocks windows) (without censorship)
+### Average ranking per 200 blocks window (without censorship)
 
 Top | Name                     | Miss   | AvgMiss   | AvgRank
 --- | ------------------------ | ------ | --------- | ------
